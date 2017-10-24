@@ -40,7 +40,7 @@ public class UserMealsUtil {
                 .map(mealUnit -> new UserMealWithExceed(mealUnit.getDateTime(),
                         mealUnit.getDescription(),
                         mealUnit.getCalories(),
-                        dayGroupedCalories.get(mealUnit.getDateTime().toLocalDate()) > 2000))
+                        dayGroupedCalories.get(mealUnit.getDateTime().toLocalDate()) > caloriesPerDay))
                 .collect(Collectors.toList());
     }
 }
