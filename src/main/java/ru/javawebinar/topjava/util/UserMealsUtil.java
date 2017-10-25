@@ -7,10 +7,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * GKislin
@@ -34,15 +31,7 @@ public class UserMealsUtil {
     public static List<UserMealWithExceed> getFilteredWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
 
         Map<LocalDate, Integer> dayGroupedCalories = new HashMap<>();
-        mealList.forEach((mealUnit) -> {
-            LocalDate localDate = mealUnit.getDateTime().toLocalDate();
-            Integer calories = dayGroupedCalories.get(localDate);
-            if (calories == null) {
-                dayGroupedCalories.put(localDate, mealUnit.getCalories());
-            } else {
-                dayGroupedCalories.replace(localDate, calories + mealUnit.getCalories());
-            }
-        });
+        mealList.forEach((mealUnit) -> dayGroupedCalories.merge(mealUnit.getDateTime().toLocalDate(), mealUnit.getCalories(), (a, b) -> a + b));
 
         List<UserMealWithExceed> result = new ArrayList<>();
         mealList.forEach((mealUnit) -> {
