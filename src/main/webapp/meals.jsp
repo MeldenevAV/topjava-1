@@ -16,7 +16,7 @@
 
         <tr bgcolor="${mealUnit.exceed} ? #deb887:#f0ffff">
             <td><c:out value="${mealUnit.description}"/></td>
-            <td><fmt:formatDate pattern="yyyy-MMM-dd" value="${mealUnit.dateTime}"/></td>
+            <td><c:out value="${mealUnit.dateTime}"/></td>
             <td><c:out value="${mealUnit.calories}"/></td>
             <td><c:out value="${mealUnit.exceed}"/></td>
         </tr>
