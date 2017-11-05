@@ -8,27 +8,25 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InMemoryDaoImpl implements MealDao {
+public class InMemoryMealDaoImpl implements MealDao {
     List<Meal> mealList;
 
-    InMemoryDaoImpl() {
+    public InMemoryMealDaoImpl() {
         mealList = MealsUtil.getMealList();
     }
 
-    private Meal getMealById(int id) {
+    @Override
+    public Meal getById(int id) {
         //TODO переделать фильтр на поиск по циклу
         List<Meal> mealWithId = mealList.stream().filter(meal -> meal.getId() == id).collect(Collectors.toList());
         return mealWithId == null ? null : mealWithId.get(0);
     }
 
     @Override
-    public void update(MealWithExceed mealWithExceed) {
-        Meal meal = getMealById(mealWithExceed.getId());
+    public void update(Meal meal) {
+        Meal mealWithId = getById(meal.getId());
         if (meal == null)
             return;
-        meal.setCalories(mealWithExceed.getCalories());
-        meal.setDateTime(mealWithExceed.getDateTime());
-        meal.setDescription(mealWithExceed.getDescription());
     }
 
     @Override
@@ -37,8 +35,8 @@ public class InMemoryDaoImpl implements MealDao {
     }
 
     @Override
-    public void delete(MealWithExceed mealWithExceed) {
-        Meal meal = getMealById(mealWithExceed.getId());
+    public void delete(int id) {
+        Meal meal = getById(id);
         if (meal == null)
             return;
         mealList.remove(meal);
@@ -47,12 +45,5 @@ public class InMemoryDaoImpl implements MealDao {
     @Override
     public List<MealWithExceed> getAll() {
         return MealsUtil.getFilteredWithExceeded(mealList, LocalTime.MIN, LocalTime.MAX, 2000);
-    }
-
-    @Override
-    public MealWithExceed getById(int id) {
-        List<MealWithExceed> mealWithExceeds = getAll();
-        List<MealWithExceed> finded = mealWithExceeds.stream().filter(meal -> meal.getId() == id).collect(Collectors.toList());
-        return finded == null ? null : finded.get(0);
     }
 }

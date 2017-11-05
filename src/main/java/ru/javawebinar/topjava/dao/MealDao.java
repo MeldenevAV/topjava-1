@@ -6,13 +6,14 @@ import ru.javawebinar.topjava.model.MealWithExceed;
 import java.util.List;
 
 public interface MealDao {
-    public void update(MealWithExceed mealWithExceed);
+    public void update(Meal meal);
 
     public void add(Meal meal);
 
-    public void delete(MealWithExceed mealWithExceed);
+    public void delete(int id);
 
     public List<MealWithExceed> getAll();
 
-    public MealWithExceed getById(int id);
+    public Meal getById(int id);
+
 }
