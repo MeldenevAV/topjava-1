@@ -10,16 +10,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class MealServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    private static String INSERT_OR_EDIT = "/meal.jsp";
-    private static String MEAL_LIST = "/meals.jsp";
+    private static final String INSERT_OR_EDIT = "/meal.jsp";
+    private static final String MEAL_LIST = "/meals.jsp";
     private MealDao dao;
 
     public MealServlet() {
@@ -29,7 +26,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String forward = "";
+        String forward;
         String action = request.getParameter("action");
 
         if (action.equalsIgnoreCase("delete")) {
@@ -45,6 +42,10 @@ public class MealServlet extends HttpServlet {
         } else if (action.equalsIgnoreCase("refresh")) {
             forward = MEAL_LIST;
             request.setAttribute("mealList", dao.getAll());
+        } else if (action.equalsIgnoreCase("insert")) {
+            forward = INSERT_OR_EDIT;
+            Meal meal = new Meal(dao.getNextId());
+            request.setAttribute("meal", meal);
         } else {
             forward = MEAL_LIST;
         }

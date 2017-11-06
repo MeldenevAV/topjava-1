@@ -13,10 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class InMemoryMealDaoImpl implements MealDao {
-    List<Meal> mealList;
+    private List<Meal> mealList;
 
     public static List<Meal> getMealList() {
-        List<Meal> result = new ArrayList<Meal>();
+        List<Meal> result = new ArrayList<>();
         result.add(new Meal(currentId.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
         result.add(new Meal(currentId.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
         result.add(new Meal(currentId.incrementAndGet(), LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500));
