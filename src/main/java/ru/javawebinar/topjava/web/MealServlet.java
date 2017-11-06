@@ -60,8 +60,7 @@ public class MealServlet extends HttpServlet {
         Meal meal = id == 0 ? new Meal(dao.getNextId()) : new Meal(id);
         meal.setDescription(request.getParameter("description"));
         meal.setCalories(Integer.parseInt(request.getParameter("calories")));
-        LocalDateTime mealDateTime = LocalDateTime.parse(request.getParameter("mealDateTime")
-                , DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+        LocalDateTime mealDateTime = LocalDateTime.parse(request.getParameter("mealDateTime"));
         meal.setDateTime(mealDateTime);
 
         if (id == 0) {
@@ -70,7 +69,7 @@ public class MealServlet extends HttpServlet {
             dao.update(meal);
         }
         RequestDispatcher view = request.getRequestDispatcher(MEAL_LIST);
-        request.setAttribute("meals", dao.getAll());
+        request.setAttribute("mealList", dao.getAll());
         view.forward(request, response);
     }
 

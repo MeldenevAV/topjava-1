@@ -9,6 +9,7 @@
     <title>Show All Meals</title>
 </head>
 <body>
+<h3><a href="index.html">Home</a></h3>
 <table border=1>
     <thead>
     <tr>
