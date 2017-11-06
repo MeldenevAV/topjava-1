@@ -18,7 +18,7 @@
     });
 </script>
 
-<form method="POST" action='mealController' name="frmAddMeal">
+<form method="POST" action='mealServlet' name="frmAddMeal">
     Meal ID : <input type="text" readonly="readonly" name="mealId"
                      value="<c:out value="${meal.mealId}" />"/> <br/>
     Description : <input

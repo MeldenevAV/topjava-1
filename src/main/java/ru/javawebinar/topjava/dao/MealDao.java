@@ -6,6 +6,8 @@ import ru.javawebinar.topjava.model.MealWithExceed;
 import java.util.List;
 
 public interface MealDao {
+    public int getNextId();
+
     public void update(Meal meal);
 
     public void add(Meal meal);
