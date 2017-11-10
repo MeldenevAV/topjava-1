@@ -7,12 +7,12 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -27,10 +27,10 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public Meal save(Meal meal, int userId) {
+    public Meal save(Meal meal, int userId) throws NotFoundException {
         log.info("save {}", meal);
         if (meal.getUserId() != userId)
-            return null;
+            throw new NotFoundException("meal belong to another user");
         if (meal.isNew()) {
             meal.setId(counter.incrementAndGet());
         }
@@ -39,37 +39,46 @@ public class InMemoryMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public void delete(int id, int userId) {
+    public void delete(int id, int userId) throws NotFoundException {
         log.info("delete {}", id);
-        Meal meal = get(id, userId);
-        if (meal == null)
-            return;
+        try {
+            get(id, userId);
+        } catch (NotFoundException exc) {
+            throw new NotFoundException(exc.getMessage());
+        }
         repository.remove(id);
     }
 
     @Override
-    public Meal get(int id, int userId) {
+    public Meal get(int id, int userId) throws NotFoundException {
         log.info("get {}", id);
         Meal meal = repository.get(id);
-        if (meal == null || meal.getUserId() != userId)
-            return null;
+        if (meal == null)
+            throw new NotFoundException("meal not found");
+        if (meal.getUserId() != userId)
+            throw new NotFoundException("meal belong to another user");
         return meal;
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
+    public Collection<Meal> getAll(int userId) throws NotFoundException {
         log.info("getAll");
-        return repository.values().stream().filter(user -> user.getUserId() == userId).collect(Collectors.toList());
+        Collection<Meal> result = repository.values().stream().filter(user -> user.getUserId() == userId).collect(Collectors.toList());
+        if (result == null)
+            throw new NotFoundException("Not found meals for userId =  " + userId);
+        return result;
     }
 
     @Override
-    public Collection<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) {
+    public Collection<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) throws NotFoundException {
         log.info("getAll");
-        repository.values().stream()
+        Collection<Meal> result = repository.values().stream()
                 .filter(meal -> meal.getUserId() == userId)
                 .filter(meal -> DateTimeUtil.isBetween(meal.getDate(), startDate, endDate))
                 .collect(Collectors.toList());
-        return null;
+        if (result == null)
+            throw new NotFoundException("Not found meals for userId =  " + userId);
+        return result;
     }
 
 

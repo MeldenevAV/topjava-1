@@ -5,12 +5,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Controller;
+import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.service.UserService;
 import ru.javawebinar.topjava.to.MealWithExceed;
 import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -28,31 +30,23 @@ public class MealRestController {
     private UserService userService;
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    public List<MealWithExceed> getAll(int userId) {
+    public List<MealWithExceed> getAll() throws NotFoundException {
         log.info("getAll");
-        User user = userService.get(userId);
-        if (user == null)
-            return null;
-
-        return MealsUtil.getFilteredWithExceeded(service.getAll(userId)
+        return MealsUtil.getFilteredWithExceeded(service.getAll(AuthorizedUser.id())
                 , LocalTime.MIN
                 , LocalTime.MAX
-                , user.getCaloriesPerDay());
+                , AuthorizedUser.getCaloriesPerDay());
     }
 
-    public List<MealWithExceed> getAll(int userId, LocalDate startDate, LocalDate endDate) {
+    public List<MealWithExceed> getAll(LocalDate startDate, LocalDate endDate) throws NotFoundException {
         log.info("getAll");
-        User user = userService.get(userId);
-        if (user == null)
-            return null;
-
-        return MealsUtil.getFilteredWithExceeded(service.getAll(userId, startDate, endDate)
+        return MealsUtil.getFilteredWithExceeded(service.getAll(AuthorizedUser.id(), startDate, endDate)
                 , LocalTime.MIN
                 , LocalTime.MAX
-                , user.getCaloriesPerDay());
+                , AuthorizedUser.getCaloriesPerDay());
     }
 
-    public Meal get(int id, int userId) {
+    public Meal get(int id, int userId) throws NotFoundException {
         log.info("get {}", id);
         return service.get(id, userId);
     }
@@ -63,12 +57,12 @@ public class MealRestController {
         return service.create(meal);
     }
 
-    public void delete(int id, int userId) {
+    public void delete(int id, int userId) throws NotFoundException {
         log.info("delete {}", id);
         service.delete(id, userId);
     }
 
-    public void update(Meal meal, int id, int userId) {
+    public void update(Meal meal, int id, int userId) throws NotFoundException {
         log.info("update {} with id={}", meal, id);
         assureIdConsistent(meal, id);
         service.update(meal, userId);
