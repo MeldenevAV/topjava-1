@@ -6,6 +6,7 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,26 +22,33 @@ public class MealServiceImpl implements MealService {
 
     @Override
     public Meal create(Meal meal) {
-        return repository.save(meal);
+        return repository.save(meal, meal.getUserId());
     }
 
     @Override
-    public void delete(int id) throws NotFoundException {
-        repository.delete(id);
+    public void delete(int id, int userId) throws NotFoundException {
+        repository.delete(id, userId);
     }
 
     @Override
-    public Meal get(int id) throws NotFoundException {
-        return repository.get(id);
+    public Meal get(int id, int userId) throws NotFoundException {
+        return repository.get(id, userId);
     }
 
     @Override
-    public void update(Meal meal) {
-        repository.save(meal);
+    public void update(Meal meal, int userId) {
+        repository.save(meal, userId);
     }
 
     @Override
-    public List<Meal> getAll() {
-        return repository.getAll().stream().collect(Collectors.toList());
+    public List<Meal> getAll(int userId) {
+        return repository.getAll(userId).stream()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Meal> getAll(int userId, LocalDate startDate, LocalDate endDate) {
+        return repository.getAll(userId, startDate, endDate).stream()
+                .collect(Collectors.toList());
     }
 }
