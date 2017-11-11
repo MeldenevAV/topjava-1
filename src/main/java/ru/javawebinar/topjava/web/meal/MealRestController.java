@@ -16,7 +16,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
@@ -35,7 +37,10 @@ public class MealRestController {
         return MealsUtil.getFilteredWithExceeded(service.getAll(AuthorizedUser.id())
                 , LocalTime.MIN
                 , LocalTime.MAX
-                , AuthorizedUser.getCaloriesPerDay());
+                , AuthorizedUser.getCaloriesPerDay()).stream()
+                .sorted(Comparator.comparing(MealWithExceed::getDateTime).reversed())
+                .collect(Collectors.toList());
+
     }
 
     public List<MealWithExceed> getAll(LocalDate startDate, LocalDate endDate) throws NotFoundException {
@@ -43,7 +48,10 @@ public class MealRestController {
         return MealsUtil.getFilteredWithExceeded(service.getAll(AuthorizedUser.id(), startDate, endDate)
                 , LocalTime.MIN
                 , LocalTime.MAX
-                , AuthorizedUser.getCaloriesPerDay());
+                , AuthorizedUser.getCaloriesPerDay())
+                .stream()
+                .sorted(Comparator.comparing(MealWithExceed::getDateTime).reversed())
+                .collect(Collectors.toList());
     }
 
     public Meal get(int id, int userId) throws NotFoundException {
