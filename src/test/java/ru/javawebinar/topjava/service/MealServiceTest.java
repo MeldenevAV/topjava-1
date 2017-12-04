@@ -1,16 +1,8 @@
 package ru.javawebinar.topjava.service;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringRunner;
-import ru.javawebinar.topjava.ActiveDbProfileResolver;
-import ru.javawebinar.topjava.Profiles;
+import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
@@ -18,6 +10,7 @@ import java.time.LocalDate;
 import java.time.Month;
 
 import static ru.javawebinar.topjava.MealTestData.*;
+import static ru.javawebinar.topjava.UserTestData.*;
 import static ru.javawebinar.topjava.UserTestData.ADMIN_ID;
 import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
@@ -71,12 +64,18 @@ public class MealServiceTest extends ServiceTest {
     public void testUpdateNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
         thrown.expectMessage("Not found entity with id=" + MEAL1_ID);
+        MEAL1.setUser(UserTestData.USER);
         service.update(MEAL1, ADMIN_ID);
     }
 
     @Test
     public void testGetAll() throws Exception {
         assertMatch(service.getAll(USER_ID), MEALS);
+    }
+
+    @Test
+    public void testMealWithUser() throws Exception {
+        assertMatch(service.getMealWithUser(MEAL1_ID, USER_ID).getUser(), USER);
     }
 
     @Test
