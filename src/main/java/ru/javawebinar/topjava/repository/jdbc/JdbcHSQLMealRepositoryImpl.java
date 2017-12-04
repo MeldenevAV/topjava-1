@@ -14,31 +14,19 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-@Profile(Profiles.POSTGRES_DB)
-public class JdbcMealRepositoryImpl implements MealRepository {
-
-    protected static final RowMapper<Meal> ROW_MAPPER = BeanPropertyRowMapper.newInstance(Meal.class);
-
-    protected final JdbcTemplate jdbcTemplate;
-
-    protected final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
-    protected final SimpleJdbcInsert insertMeal;
+@Profile (Profiles.HSQL_DB)
+public class JdbcHSQLMealRepositoryImpl extends JdbcMealRepositoryImpl implements MealRepository {
 
     @Autowired
-    public JdbcMealRepositoryImpl(DataSource dataSource, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.insertMeal = new SimpleJdbcInsert(dataSource)
-                .withTableName("meals")
-                .usingGeneratedKeyColumns("id");
-
-        this.jdbcTemplate = jdbcTemplate;
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
+    public JdbcHSQLMealRepositoryImpl(DataSource dataSource, JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+        super(dataSource,  jdbcTemplate, namedParameterJdbcTemplate);
     }
 
     @Override
@@ -47,7 +35,7 @@ public class JdbcMealRepositoryImpl implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", meal.getDateTime())
+                .addValue("date_time", DateTimeUtil.fromLocalDateTime(meal.getDateTime()))
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -66,27 +54,12 @@ public class JdbcMealRepositoryImpl implements MealRepository {
     }
 
     @Override
-    public boolean delete(int id, int userId) {
-        return jdbcTemplate.update("DELETE FROM meals WHERE id=? AND user_id=?", id, userId) != 0;
-    }
-
-    @Override
-    public Meal get(int id, int userId) {
-        List<Meal> meals = jdbcTemplate.query(
-                "SELECT * FROM meals WHERE id = ? AND user_id = ?", ROW_MAPPER, id, userId);
-        return DataAccessUtils.singleResult(meals);
-    }
-
-    @Override
-    public List<Meal> getAll(int userId) {
-        return jdbcTemplate.query(
-                "SELECT * FROM meals WHERE user_id=? ORDER BY date_time DESC", ROW_MAPPER, userId);
-    }
-
-    @Override
     public List<Meal> getBetween(LocalDateTime startDate, LocalDateTime endDate, int userId) {
         return jdbcTemplate.query(
-                "SELECT * FROM meals WHERE user_id=?  AND date_time BETWEEN ? AND ? ORDER BY date_time DESC",
-                ROW_MAPPER, userId, startDate, endDate);
+                "SELECT * FROM meals WHERE user_id=?  AND date_time >= ? AND date_time <= ? ORDER BY date_time DESC",
+                ROW_MAPPER,
+                userId,
+                DateTimeUtil.fromLocalDateTime(startDate),
+                DateTimeUtil.fromLocalDateTime(endDate));
     }
 }
