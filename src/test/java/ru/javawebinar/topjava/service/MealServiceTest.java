@@ -73,7 +73,7 @@ public class MealServiceTest {
         service.delete(MEAL1_ID, USER_ID);
         assertMatch(service.getAll(USER_ID), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2);
     }
-`
+
     @Test
     public void testDeleteNotFound() throws Exception {
         thrown.expect(NotFoundException.class);
