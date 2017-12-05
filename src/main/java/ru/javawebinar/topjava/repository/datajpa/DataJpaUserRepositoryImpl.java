@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 public class DataJpaUserRepositoryImpl implements UserRepository {
     private static final Sort SORT_NAME_EMAIL = new Sort(Sort.Direction.ASC, "name", "email");
+    private static final Sort SORT_MEALS = new Sort(Sort.Direction.DESC, "meals.dateTime");
 
     @Autowired
     private CrudUserRepository crudRepository;
@@ -42,7 +43,7 @@ public class DataJpaUserRepositoryImpl implements UserRepository {
 
     @Override
     public User getUserWithMeals(int userId) {
-        return crudRepository.getUserWithMeals(userId);
+        return crudRepository.getUserById(userId, SORT_MEALS);
     }
 
 }

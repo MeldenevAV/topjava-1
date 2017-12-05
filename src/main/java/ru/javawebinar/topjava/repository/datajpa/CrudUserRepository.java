@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -31,6 +32,6 @@ public interface CrudUserRepository extends JpaRepository<User, Integer> {
 
     User getByEmail(String email);
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.meals WHERE u.id=:id")
-    User getUserWithMeals(@Param("id") int userId);
+    @EntityGraph(attributePaths = "meals", type = EntityGraph.EntityGraphType.LOAD)
+    User getUserById(@Param("id") int userId, Sort sort);
 }

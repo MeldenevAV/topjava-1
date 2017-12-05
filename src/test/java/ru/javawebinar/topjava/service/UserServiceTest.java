@@ -89,7 +89,7 @@ public class UserServiceTest extends ServiceTest {
 
     @Test
     public void testGetUserWithMeal() {
-        assertMatch(service.get(USER_ID).getMeals(), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
+        assertMatch(service.getUserWithMeals(USER_ID).getMeals(), MEAL6, MEAL5, MEAL4, MEAL3, MEAL2, MEAL1);
     }
 
 }

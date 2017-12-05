@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -28,6 +29,6 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
 
     List<Meal> findByUserIdAndDateTimeBetween(int userId, LocalDateTime startDate, LocalDateTime endDate, Sort sortDatetime);
 
-    @Query("SELECT m FROM Meal m INNER JOIN FETCH m.user WHERE m.id = :id AND m.user.id = :userId")
-    Optional<Meal> getMealWithUser(@Param("id") int id, @Param("userId") int userId);
+    @EntityGraph(attributePaths = "user", type = EntityGraph.EntityGraphType.LOAD)
+    Optional <Meal> getMealByIdAndUserId(int id, int userId);
 }
