@@ -10,7 +10,10 @@
 <body>
 <section>
     <h3><a href="index.html"><spring:message code="app.home"/></a></h3>
-    <h2>${param.action == 'create' ? 'Create meal' : 'Edit meal'}</h2>
+    <spring:message code="meal.createMealLabel" var="createMeal"/>
+    <spring:message code="meal.editMealLabel" var="editMeal"/>
+
+    <h2>${param.action == 'create' ? createMeal : editMeal}</h2>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">
@@ -27,8 +30,8 @@
             <dt><spring:message code="meal.calories"/>:</dt>
             <dd><input type="number" value="${meal.calories}" name="calories" required></dd>
         </dl>
-        <button type="submit"><spring:message code="app.save"/></button>
-        <button onclick="window.history.back()" type="button"><spring:message code="app.cancel"/></button>
+        <button type="submit"><spring:message code="common.save"/></button>
+        <button onclick="window.history.back()" type="button"><spring:message code="common.cancel"/></button>
     </form>
 </section>
 </body>
