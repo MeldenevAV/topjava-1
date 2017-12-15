@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
@@ -44,6 +45,7 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    @Transactional
     public User save(User user) {
         BeanPropertySqlParameterSource parameterSource = new BeanPropertySqlParameterSource(user);
 
@@ -55,10 +57,20 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                         "registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id", parameterSource) == 0) {
             return null;
         }
+
+        String sqlDeleteRoles = "DELETE FROM user_roles WHERE userId = " + user.getId().toString();
+        String valueRoles = "";
+        for (Role role : user.getRoles()) {
+            valueRoles += (valueRoles.isEmpty() ? "" : ", ") + "(" + user.getId().toString() + ", " + role.toString() + ")";
+        }
+
+        String sqlInsertRoles = "INSERT INTO user_roles (role, user_id) VALUES " + valueRoles + ";";
+        jdbcTemplate.batchUpdate(sqlDeleteRoles, sqlInsertRoles);
         return user;
     }
 
     @Override
+    @Transactional
     public boolean delete(int id) {
         return jdbcTemplate.update("DELETE FROM users WHERE id=?", id) != 0;
     }
@@ -83,11 +95,11 @@ public class JdbcUserRepositoryImpl implements UserRepository {
     private final class UserWithRolesExtractor implements ResultSetExtractor<List<User>> {
         @Override
         public List<User> extractData(ResultSet rs) throws SQLException, DataAccessException {
-            Map <Integer, User> users = new ConcurrentHashMap<>();
-            while (rs.next()){
+            Map<Integer, User> users = new ConcurrentHashMap<>();
+            while (rs.next()) {
                 Integer userId = rs.getInt("id");
                 User user = users.get(userId);
-                if(user == null){
+                if (user == null) {
                     user = new User();
                     user.setId(userId);
                     user.setName(rs.getString("name"));
