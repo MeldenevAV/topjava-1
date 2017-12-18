@@ -4,14 +4,16 @@
 <%@ taglib prefix="fn" uri="http://topjava.javawebinar.ru/functions" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
+<jsp:include page="fragments/headTag.jsp"/>
 <head>
-    <title>><spring:message code="app.title"/></title>
-    <link rel="stylesheet" href="css/style.css">
+    <title><spring:message code="app.title"/></title>
+    <link rel="stylesheet" href="/resources/css/style.css">
 </head>
 <body>
+<jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
     <h3><spring:message code="meal.title"/></h3>
-    <form method="post" action="meals?action=filter">
+    <form method="post" action="meals/filter">
         <dl>
             <dt><spring:message code="meal.fromDate"/>:</dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
@@ -54,11 +56,12 @@
                 </td>
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
-                <td><a href="meals?action=update&id=${meal.id}"><spring:message code="meal.update"/></a></td>
+                <td><a href="meals/update/${meal.id}"><spring:message code="meal.update"/></a></td>
                 <td><a href="meals/delete/${meal.id}"><spring:message code="meal.delete"/></a></td>
             </tr>
         </c:forEach>
     </table>
 </section>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>

@@ -17,13 +17,13 @@ import ru.javawebinar.topjava.repository.UserRepository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Collectors;
 
 @Repository
+@Transactional(readOnly = true)
 public class JdbcUserRepositoryImpl implements UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -58,14 +58,12 @@ public class JdbcUserRepositoryImpl implements UserRepository {
             return null;
         }
 
-        String sqlDeleteRoles = "DELETE FROM user_roles WHERE userId = " + user.getId().toString();
-        String valueRoles = "";
+        String sqlDeleteRoles = "DELETE FROM user_roles WHERE user_id = " + user.getId().toString();
         for (Role role : user.getRoles()) {
-            valueRoles += (valueRoles.isEmpty() ? "" : ", ") + "(" + user.getId().toString() + ", " + role.toString() + ")";
+            String sqlInsertRoles = "INSERT INTO user_roles (user_id, role) VALUES (" +
+                    user.getId().toString() + ", '" + role.toString() + "')" + ";";
+            jdbcTemplate.batchUpdate(sqlDeleteRoles, sqlInsertRoles);
         }
-
-        String sqlInsertRoles = "INSERT INTO user_roles (role, user_id) VALUES " + valueRoles + ";";
-        jdbcTemplate.batchUpdate(sqlDeleteRoles, sqlInsertRoles);
         return user;
     }
 
@@ -77,19 +75,19 @@ public class JdbcUserRepositoryImpl implements UserRepository {
 
     @Override
     public User get(int id) {
-        List<User> users = jdbcTemplate.query(" SELECT * FROM users LEFT JOIN user_roles WHERE id=?", userWithRolesExtractor, id);
+        List<User> users = jdbcTemplate.query(" SELECT * FROM users LEFT JOIN user_roles ON users.id=user_roles.user_id WHERE id=?", userWithRolesExtractor, id);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public User getByEmail(String email) {
-        List<User> users = jdbcTemplate.query("SELECT * FROM users LEFT JOIN user_roles WHERE email=?", userWithRolesExtractor, email);
+        List<User> users = jdbcTemplate.query("SELECT * FROM users LEFT JOIN user_roles ON users.id=user_roles.user_id WHERE email=?", userWithRolesExtractor, email);
         return DataAccessUtils.singleResult(users);
     }
 
     @Override
     public List<User> getAll() {
-        return jdbcTemplate.query("SELECT * FROM users LEFT JOIN user_roles ORDER BY name, email", userWithRolesExtractor);//jdbcTemplate.query("SELECT * FROM users ORDER BY name, email", ROW_MAPPER);
+        return jdbcTemplate.query("SELECT * FROM users LEFT JOIN user_roles ON users.id=user_roles.user_id ORDER BY name, email", userWithRolesExtractor);
     }
 
     private final class UserWithRolesExtractor implements ResultSetExtractor<List<User>> {
@@ -116,7 +114,8 @@ public class JdbcUserRepositoryImpl implements UserRepository {
                     user.getRoles().add(Role.valueOf(rs.getString("role")));
                 }
             }
-            return (ArrayList<User>) users.values();
+            return users.values().stream().sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
+                    .collect(Collectors.toList());
         }
     }
 }

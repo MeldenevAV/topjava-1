@@ -3,19 +3,18 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <html>
+<jsp:include page="fragments/headTag.jsp"/>
 <head>
     <title><spring:message code="meal.meal"/></title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/resources/css/style.css">
 </head>
 <body>
+<jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h3><a href="index.html"><spring:message code="app.home"/></a></h3>
-    <spring:message code="meal.createMealLabel" var="createMeal"/>
-    <spring:message code="meal.editMealLabel" var="editMeal"/>
-
-    <h2>${param.action == 'create' ? createMeal : editMeal}</h2>
+    <h3><a href="index"><spring:message code="app.home"/></a></h3>
+    <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
+    <h2><spring:message code="${param.action == 'create' ? 'meal.createMealLabel' : 'meal.editMealLabel'}"/></h2>
     <hr>
-    <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
@@ -34,5 +33,6 @@
         <button onclick="window.history.back()" type="button"><spring:message code="common.cancel"/></button>
     </form>
 </section>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
