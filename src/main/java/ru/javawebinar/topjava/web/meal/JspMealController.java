@@ -40,7 +40,7 @@ public class JspMealController extends AbstractMealController {
     }
 
 
-    @PutMapping
+    @PostMapping
     public String createOrUpdate(@ModelAttribute("meal") Meal meal) {
         if (meal.isNew()) {
             super.create(meal);
