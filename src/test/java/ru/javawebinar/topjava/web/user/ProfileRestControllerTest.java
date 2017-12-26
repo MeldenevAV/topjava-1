@@ -22,6 +22,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
         TestUtil.print(
                 mockMvc.perform(get(REST_URL))
                         .andExpect(status().isOk())
+                        .andDo(print())
                         .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                         .andExpect(contentJson(USER))
         );
@@ -30,6 +31,7 @@ public class ProfileRestControllerTest extends AbstractControllerTest {
     @Test
     public void testDelete() throws Exception {
         mockMvc.perform(delete(REST_URL))
+                .andDo(print())
                 .andExpect(status().isOk());
         assertMatch(userService.getAll(), ADMIN);
     }
