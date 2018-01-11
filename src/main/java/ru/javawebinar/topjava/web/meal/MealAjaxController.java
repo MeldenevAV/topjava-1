@@ -1,15 +1,24 @@
 package ru.javawebinar.topjava.web.meal;
 
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.to.MealWithExceed;
+import ru.javawebinar.topjava.util.MealsUtil;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.StringJoiner;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.getStringResponseEntity;
 
 @RestController
 @RequestMapping(value = "/ajax/profile/meals")
@@ -28,14 +37,15 @@ public class MealAjaxController extends AbstractMealController {
     }
 
     @PostMapping
-    public void createOrUpdate(@RequestParam("id") Integer id,
-                               @RequestParam("dateTime") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTime,
-                               @RequestParam("description") String description,
-                               @RequestParam("calories") int calories) {
-        Meal meal = new Meal(id, dateTime, description, calories);
-        if (meal.isNew()) {
-            super.create(meal);
+    public ResponseEntity<String> createOrUpdate(@Valid MealTo mealTo, BindingResult result) {
+        ResponseEntity<String> joiner = getStringResponseEntity(result);
+        if (joiner != null) return joiner;
+        if (mealTo.isNew()) {
+            super.create(MealsUtil.createNewFromTo(mealTo));
+        } else {
+            super.update(mealTo, mealTo.getId());
         }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
