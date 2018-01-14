@@ -75,25 +75,6 @@
                 <th></th>
             </tr>
             </thead>
-            <%--
-             <c:forEach items="${meals}" var="meal">
-                         <jsp:useBean id="meal" scope="page" type="ru.javawebinar.topjava.to.MealWithExceed"/>
-                         <tr class="${meal.exceed ? 'exceeded' : 'normal'}">
-                             <td>
-                                     &lt;%&ndash;${meal.dateTime.toLocalDate()} ${meal.dateTime.toLocalTime()}&ndash;%&gt;
-                                     &lt;%&ndash;<%=TimeUtil.toString(meal.getDateTime())%>&ndash;%&gt;
-                                     &lt;%&ndash;${fn:replace(meal.dateTime, 'T', ' ')}&ndash;%&gt;
-                                     ${fn:formatDateTime(meal.dateTime)}
-                             </td>
-                             <td>${meal.description}</td>
-                             <td>${meal.calories}</td>
-                             <td><a><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></a></td>
-                             <td><a onclick="deleteRow(${meal.id})">
-                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
-                             </a></td>
-                         </tr>
-                     </c:forEach>
-                     --%>
         </table>
     </div>
 </div>
@@ -158,6 +139,5 @@
     i18n["${key}"] = "<spring:message code="${key}"/>";
     </c:forEach>
 </script>
-
 
 </html>

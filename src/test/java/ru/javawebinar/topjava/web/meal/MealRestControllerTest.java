@@ -88,6 +88,12 @@ public class MealRestControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void testGetUnauth() throws Exception {
+        mockMvc.perform(get(REST_URL))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
     public void testFilter() throws Exception {
         mockMvc.perform(get(REST_URL + "filter")
                 .param("startDate", "2015-05-30").param("startTime", "07:00")
