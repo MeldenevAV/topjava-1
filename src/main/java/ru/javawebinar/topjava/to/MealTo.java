@@ -50,6 +50,10 @@ public class MealTo extends BaseTo implements Serializable {
         this.dateTime = dateTime;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public String toString() {
         return "MealTo{" +
