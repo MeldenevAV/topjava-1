@@ -27,9 +27,7 @@ $(function () {
                 "data": "dateTime",
                 "render": function (date, type, row) {
                     if (type === "display") {
-                        // return date.replace("T", " ");
-                        return date;
-
+                        return date.replace("T", " ");
                     }
                     return date;
                 }
