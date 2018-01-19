@@ -41,7 +41,7 @@ public class MealAjaxController extends AbstractMealController {
     @PostMapping
     public void createOrUpdate(@Valid Meal meal, BindingResult result) {
         if (result.hasErrors()) {
-            throw new NotValidEntityException(ValidationUtil.getErrorResponse(result).toString());
+            throw new NotValidEntityException(ValidationUtil.getErrors(result));
         }
         if (meal.isNew()) {
             super.create(meal);
